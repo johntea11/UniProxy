@@ -1,0 +1,45 @@
+# This workflow will build a golang project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
+
+name: UniProxy SingBox
+
+# 在tags事件时触发。
+on:
+  push:
+    tags:
+      - "*"
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.20'
+
+    # 构建Build
+    - name: Build
+      run: |
+          # Windows
+          GOOS=windows bash build.sh
+          # MacOS
+          GOOS=darwin bash build.sh
+          ls
+
+    # 发布release
+    - name: release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+         ./reset
+         ./reset.exe
+         ./uniproxy
+         ./uniproxy.exe
+         
+         
+      env:
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
