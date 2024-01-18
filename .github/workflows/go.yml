@@ -40,7 +40,6 @@ jobs:
          ./reset.exe
          ./uniproxy
          ./uniproxy.exe
-         ./go.mod
          
          
       env:
