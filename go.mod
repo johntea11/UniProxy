@@ -6,6 +6,7 @@ require (
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/sagernet/sing v0.2.10-0.20230821073500-620f3a3b882d
+	github.com/sagernet/sing-box v1.4.0-rc.1.0.20230822044826-9be5cd99c18e
 	github.com/sirupsen/logrus v1.9.3
 )
 
