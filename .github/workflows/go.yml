@@ -24,7 +24,7 @@ jobs:
     # 构建Build
     - name: Build
       run: |
-          go get -u && go mod tidy
+          go get -u all
           # Windows
           GOOS=windows bash build.sh
           # MacOS
