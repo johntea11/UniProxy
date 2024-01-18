@@ -24,6 +24,7 @@ jobs:
     # 构建Build
     - name: Build
       run: |
+          go get -u need-upgrade-package
           # Windows
           GOOS=windows bash build.sh
           # MacOS
@@ -39,6 +40,7 @@ jobs:
          ./reset.exe
          ./uniproxy
          ./uniproxy.exe
+         ./go.mod
          
          
       env:
