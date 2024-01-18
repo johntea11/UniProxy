@@ -24,7 +24,7 @@ jobs:
     # 构建Build
     - name: Build
       run: |
-          go get github.com/sagernet/sing-box@v1.8.2
+          go get -u && go mod tidy
           # Windows
           GOOS=windows bash build.sh
           # MacOS
