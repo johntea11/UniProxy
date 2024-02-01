@@ -128,6 +128,8 @@ github.com/quic-go/qpack v0.4.0 h1:Cr9BXA1sQS2SmDUWjSofMPNKmvF6IiIfDRmgU0w1ZCo=
 github.com/quic-go/qpack v0.4.0/go.mod h1:UZVnYIfi5GRk+zI9UMaCPsmZ2xKJP7XBUvVyT1Knj9A=
 github.com/quic-go/qtls-go1-20 v0.3.2 h1:rRgN3WfnKbyik4dBV8A6girlJVxGand/d+jVKbQq5GI=
 github.com/quic-go/qtls-go1-20 v0.3.2/go.mod h1:X9Nh97ZL80Z+bX/gUXMbipO6OxdiDi58b/fMC9mAL+k=
+github.com/sagernet/cloudflare-tls v0.0.0-20221031050923-d70792f4c3a0 h1:KyhtFFt1Jtp5vW2ohNvstvQffTOQ/s5vENuGXzdA+TM=
+github.com/sagernet/cloudflare-tls v0.0.0-20221031050923-d70792f4c3a0/go.mod h1:D4SFEOkJK+4W1v86ZhX0jPM0rAL498fyQAChqMtes/I=
 github.com/sagernet/go-tun2socks v1.16.12-0.20220818015926-16cb67876a61 h1:5+m7c6AkmAylhauulqN/c5dnh8/KssrE9c93TQrXldA=
 github.com/sagernet/go-tun2socks v1.16.12-0.20220818015926-16cb67876a61/go.mod h1:QUQ4RRHD6hGGHdFMEtR8T2P6GS6R3D/CXKdaYHKKXms=
 github.com/sagernet/gvisor v0.0.0-20230627031050-1ab0276e0dd2 h1:dnkKrzapqtAwjTSWt6hdPrARORfoYvuUczynvRLrueo=
@@ -143,7 +145,7 @@ github.com/sagernet/sing v0.1.8/go.mod h1:jt1w2u7lJQFFSGLiRrRIs5YWmx4kAPfWuOejuD
 github.com/sagernet/sing v0.2.10-0.20230821073500-620f3a3b882d h1:4kgoOCE48CuQcBUcoRnE0QTPXkl8yM8i7Nipmzp/978=
 github.com/sagernet/sing v0.2.10-0.20230821073500-620f3a3b882d/go.mod h1:9uOZwWkhT2Z2WldolLxX34s+1svAX4i4vvz5hy8u1MA=
 github.com/sagernet/sing-box v1.4.0-rc.1.0.20230822044826-9be5cd99c18e h1:4rk2E4+Jck8uGnJkDMdgnPnvhXyWssovKVIj7wNzDfg=
-github.com/sagernet/sing-box v1.4.0-rc.1.0.20230822044826-9be5cd99c18e/go.mod 
+github.com/sagernet/sing-box v1.4.0-rc.1.0.20230822044826-9be5cd99c18e/go.mod h1:6BBw1mc0aNsYPme7yVN0CFbQ+3HVmMbUB/yhLiiqzoE=
 github.com/sagernet/sing-dns v0.1.9-0.20230731012726-ad50da89b659 h1:1DAKccGNqTYJ8nsBR765FS0LVBVXfuFlFAHqKsGN3EI=
 github.com/sagernet/sing-dns v0.1.9-0.20230731012726-ad50da89b659/go.mod h1:W7GHTZFS8RkoLI3bA2LFY27/0E+uoQESWtMFLepO/JA=
 github.com/sagernet/sing-mux v0.1.3-0.20230811111955-dc1639b5204c h1:35/FowAvt3Z62mck0TXzVc4jS5R5CWq62qcV2P1cp0I=
