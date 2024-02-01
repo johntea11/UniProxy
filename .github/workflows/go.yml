@@ -27,8 +27,8 @@ jobs:
     - name: Build
       run: |
           go clean -modcache
-          #go get -u ./...
-          go get -u github.com/sagernet/cloudflare-tls
+          go get -u ./...
+          #go get -u github.com/sagernet/cloudflare-tls
           #go get -u && go mod tidy
           # Windows
           GOOS=windows bash build.sh
