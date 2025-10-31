@@ -23,6 +23,7 @@ jobs:
 
     - name: Build
       run: |
+        go mod tidy
         ./build.sh
     
     - name: Create ZIP archive
