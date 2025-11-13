@@ -48,7 +48,6 @@ type ServerInfo struct {
 		PublicKey     string `json:"public_key"`
 		ServerName    string `json:"server_name"`
 		ShortId       string `json:"short_id"`
-		ALPN          []string `json:"alpn"` // <--- 添加这一行
 	} `json:"tls_settings"`
 	NetworkSettings struct {
 		Path       string      `json:"path"`
