@@ -196,36 +196,57 @@ func GetSingBoxConfig(uuid string, server *v2b.ServerInfo) (option.Options, erro
 			}
 		}
 	case "anytls":
-		// 1. 设置传输层 (Transport)
-		// (这部分与 trojan 相同, 以支持 ws, grpc 等)
+		// 1. 设置传输层 (同 trojan)
 		transport := &option.V2RayTransportOptions{
 			Type: server.Network,
 		}
 		switch transport.Type {
 		case "tcp", "":
 			transport.Type = ""
-
-		// 2. 构建 TLS 选项
-		// anytls 类型总是启用 TLS, 如您的图片所示
-		tlsOptions := &option.OutboundTLSOptions{
-			Enabled: true, // 对应 "tls": { "enabled": true }
-
-			// 对应 "sni: bing.com" (来自您之前的文本示例)
-			// 我们假设 SNI 存储在 server.ServerName
-			ServerName: server.ServerName,
-
-			// 对应 "skip-cert-verify: true" (来自您之前的文本示例)
-			// 我们假设它存储在 server.Allow_Insecure
-			Insecure: server.Allow_Insecure == 1,
-
-			// 对应 "alpn": ["h3"] (来自您的图片)
-			// 我们假设 ALPN 列表存储在 server.TlsSettings.ALPN
-			ALPN: option.Listable[string](server.TlsSettings.ALPN),
+		case "http":
+		case "ws":
+			var u *url.URL
+			u, err := url.Parse(server.NetworkSettings.Path)
+			if err != nil {
+				return option.Options{}, err
+			}
+			ed, _ := strconv.Atoi(u.Query().Get("ed"))
+			transport.WebsocketOptions.EarlyDataHeaderName = "Sec-WebSocket-Protocol"
+			transport.WebsocketOptions.MaxEarlyData = uint32(ed)
+			transport.WebsocketOptions.Path = u.Path
+		case "grpc":
+			transport.GRPCOptions.ServiceName = server.ServerName
 		}
 
-		// 3. 添加 uTLS (Client Fingerprint)
-		// 对应 "client-fingerprint: chrome" (来自您之前的文本示例)
-		// 我们假设指纹存储在 server.TlsSettings.Fingerprint
+		// 2. 创建基础出站配置
+		out = option.Outbound{
+			Type: "trojan", // sing-box 中, anytls 仍然是 trojan 类型
+			Tag:  "anytls",
+			TrojanOptions: option.TrojanOutboundOptions{
+				ServerOptions: so,
+				Password:      uuid,
+				Transport:     transport,
+			},
+		}
+
+		// 3. 【关键】构建 anytls 专用的 TLS 配置
+		// anytls 始终启用 TLS，所以没有 "if" 检查
+		tlsOptions := &option.OutboundTLSOptions{
+			Enabled:  true,
+			// 对应 "sni: bing.com"
+			// 我们假设它存储在 ServerName 字段
+			ServerName: server.ServerName, 
+			// 对应 "skip-cert-verify: true"
+			// 我们假设它存储在 Allow_Insecure 字段
+			Insecure:   server.Allow_Insecure == 1,
+			// 对应 "alpn: [h2, http/1.1]"
+			// 我们假设它存储在 TlsSettings.ALPN 字段 (类型为 []string)
+			ALPN: option.Listable[string](server.TlsSettings.ALPN),
+		}
+		
+		// 4. 【关键】添加 uTLS (client-fingerprint)
+		// 对应 "client-fingerprint: chrome"
+		// 我们假设它存储在 TlsSettings.Fingerprint 字段 (同 vless reality)
 		if server.TlsSettings.Fingerprint != "" {
 			tlsOptions.UTLS = &option.OutboundUTLSOptions{
 				Enabled:     true,
@@ -233,17 +254,8 @@ func GetSingBoxConfig(uuid string, server *v2b.ServerInfo) (option.Options, erro
 			}
 		}
 
-		// 4. 构建最终的 Anytls 出站配置
-		out = option.Outbound{
-			Type: "anytls", // <-- 关键：使用 "anytls" 类型
-			Tag:  "anytls", // 标签
-			AnytlsOptions: option.AnytlsOutboundOptions{
-				ServerOptions: so,     // 包含 server.Host 和 server.Port
-				Password:      uuid,   // 密码
-				Transport:     transport,
-				TLS:           tlsOptions, // 附加我们上面构建的 TLS 配置
-			},
-		}
+		// 5. 将配置好的 TLS 选项应用到出站
+		out.TrojanOptions.TLS = tlsOptions
 	case "hysteria":
 		if server.HysteriaVersion == 2 {
 			var obfs *option.Hysteria2Obfs
