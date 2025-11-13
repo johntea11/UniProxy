@@ -195,63 +195,6 @@ func GetSingBoxConfig(uuid string, server *v2b.ServerInfo) (option.Options, erro
 				Insecure:   server.Allow_Insecure == 1,
 			}
 		}
-	// vvvvvvvvvv 在这里粘贴新代码 vvvvvvvvvv
-	case "anytls":
-		// 1. 设置传输层 (与 trojan 相同)
-		transport := &option.V2RayTransportOptions{
-			Type: server.Network,
-		}
-		switch transport.Type {
-		case "tcp", "":
-			transport.Type = ""
-		case "http":
-		case "ws":
-			var u *url.URL
-			u, err := url.Parse(server.NetworkSettings.Path)
-			if err != nil {
-				return option.Options{}, err
-			}
-			ed, _ := strconv.Atoi(u.Query().Get("ed"))
-			transport.WebsocketOptions.EarlyDataHeaderName = "Sec-WebSocket-Protocol"
-			transport.WebsocketOptions.MaxEarlyData = uint32(ed)
-			transport.WebsocketOptions.Path = u.Path
-		case "grpc":
-			transport.GRPCOptions.ServiceName = server.ServerName
-		}
-
-		// 2. 构建 TLS 选项 (关键部分)
-		// anytls 始终启用 TLS
-		tlsOptions := &option.OutboundTLSOptions{
-			Enabled:    true,
-			// 使用根 server.ServerName 作为 SNI (同 trojan 和 vless-1)
-			ServerName: server.ServerName,
-			// 使用根 server.Allow_Insecure (同 trojan 和 hysteria)
-			Insecure:   server.Allow_Insecure == 1,
-			// 从 TlsSettings 获取 ALPN (同 vless-2)
-			ALPN:       option.Listable[string](server.TlsSettings.ALPN),
-		}
-
-		// 3. 添加 uTLS (client-fingerprint) (同 vless-2)
-		if server.TlsSettings.Fingerprint != "" {
-			tlsOptions.UTLS = &option.OutboundUTLSOptions{
-				Enabled:     true,
-				Fingerprint: server.TlsSettings.Fingerprint,
-			}
-		}
-
-		// 4. 构建 Anytls 出站配置
-		out = option.Outbound{
-			Type: "anytls", // <-- 使用 "anytls" 类型
-			Tag:  "anytls",
-			AnytlsOptions: option.AnytlsOutboundOptions{
-				ServerOptions: so,
-				Password:      uuid,
-				Transport:     transport,
-				TLS:           tlsOptions, // 附加 TLS 配置
-			},
-		}
-
-	// ^^^^^^^^^^ 在 "case hysteria" 之前粘贴 ^^^^^^^^^^
 	case "hysteria":
 		if server.HysteriaVersion == 2 {
 			var obfs *option.Hysteria2Obfs
