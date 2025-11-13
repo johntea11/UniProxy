@@ -1,19 +1,15 @@
 module github.com/wyx2685/UniProxy
 
-// go 1.23.1
-go 1.24.7
+go 1.23.1
 
 require (
 	github.com/avast/retry-go/v4 v4.6.0
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-resty/resty/v2 v2.14.0
-	// github.com/sagernet/sing v0.5.0-beta.2
-	github.com/sagernet/sing v0.8.0-beta.6
-	//github.com/sagernet/sing-box v1.9.6-0.20240918083107-cbb0b3bf06bd
-	github.com/sagernet/sing-box v1.12.12
+	github.com/sagernet/sing v0.5.0-beta.2
+	github.com/sagernet/sing-box v1.9.6-0.20240918083107-cbb0b3bf06bd
 	github.com/sirupsen/logrus v1.9.3
 )
-
 
 require (
 	berty.tech/go-libtor v1.0.385 // indirect
@@ -80,8 +76,7 @@ require (
 	github.com/sagernet/sing-shadowsocks v0.2.7 // indirect
 	github.com/sagernet/sing-shadowsocks2 v0.2.0 // indirect
 	github.com/sagernet/sing-shadowtls v0.1.4 // indirect
-	// github.com/sagernet/sing-tun v0.4.0-beta.16 // indirect
-	github.com/sagernet/sing-tun v0.7.3 // indirect
+	github.com/sagernet/sing-tun v0.4.0-beta.16 // indirect
 	github.com/sagernet/sing-vmess v0.1.12 // indirect
 	github.com/sagernet/smux v0.0.0-20231208180855-7041f6ea79e7 // indirect
 	github.com/sagernet/utls v1.5.4 // indirect
