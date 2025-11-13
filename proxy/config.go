@@ -157,7 +157,7 @@ func GetSingBoxConfig(uuid string, server *v2b.ServerInfo) (option.Options, erro
 				Method:        server.Cipher,
 			},
 		}
-	case "trojan":
+	case "trojan", "anytls":
 		transport := &option.V2RayTransportOptions{
 			Type: server.Network,
 		}
