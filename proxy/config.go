@@ -195,67 +195,6 @@ func GetSingBoxConfig(uuid string, server *v2b.ServerInfo) (option.Options, erro
 				Insecure:   server.Allow_Insecure == 1,
 			}
 		}
-	case "anytls":
-		// 1. 设置传输层 (同 trojan)
-		transport := &option.V2RayTransportOptions{
-			Type: server.Network,
-		}
-		switch transport.Type {
-		case "tcp", "":
-			transport.Type = ""
-		case "http":
-		case "ws":
-			var u *url.URL
-			u, err := url.Parse(server.NetworkSettings.Path)
-			if err != nil {
-				return option.Options{}, err
-			}
-			ed, _ := strconv.Atoi(u.Query().Get("ed"))
-			transport.WebsocketOptions.EarlyDataHeaderName = "Sec-WebSocket-Protocol"
-			transport.WebsocketOptions.MaxEarlyData = uint32(ed)
-			transport.WebsocketOptions.Path = u.Path
-		case "grpc":
-			transport.GRPCOptions.ServiceName = server.ServerName
-		}
-
-		// 2. 创建基础出站配置
-		out = option.Outbound{
-			Type: "trojan", // sing-box 中, anytls 仍然是 trojan 类型
-			Tag:  "anytls",
-			TrojanOptions: option.TrojanOutboundOptions{
-				ServerOptions: so,
-				Password:      uuid,
-				Transport:     transport,
-			},
-		}
-
-		// 3. 【关键】构建 anytls 专用的 TLS 配置
-		// anytls 始终启用 TLS，所以没有 "if" 检查
-		tlsOptions := &option.OutboundTLSOptions{
-			Enabled:  true,
-			// 对应 "sni: bing.com"
-			// 我们假设它存储在 ServerName 字段
-			ServerName: server.ServerName, 
-			// 对应 "skip-cert-verify: true"
-			// 我们假设它存储在 Allow_Insecure 字段
-			Insecure:   server.Allow_Insecure == 1,
-			// 对应 "alpn: [h2, http/1.1]"
-			// 我们假设它存储在 TlsSettings.ALPN 字段 (类型为 []string)
-			ALPN: option.Listable[string](server.TlsSettings.ALPN),
-		}
-		
-		// 4. 【关键】添加 uTLS (client-fingerprint)
-		// 对应 "client-fingerprint: chrome"
-		// 我们假设它存储在 TlsSettings.Fingerprint 字段 (同 vless reality)
-		if server.TlsSettings.Fingerprint != "" {
-			tlsOptions.UTLS = &option.OutboundUTLSOptions{
-				Enabled:     true,
-				Fingerprint: server.TlsSettings.Fingerprint,
-			}
-		}
-
-		// 5. 将配置好的 TLS 选项应用到出站
-		out.TrojanOptions.TLS = tlsOptions
 	case "hysteria":
 		if server.HysteriaVersion == 2 {
 			var obfs *option.Hysteria2Obfs
