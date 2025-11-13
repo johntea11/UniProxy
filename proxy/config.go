@@ -157,7 +157,7 @@ func GetSingBoxConfig(uuid string, server *v2b.ServerInfo) (option.Options, erro
 				Method:        server.Cipher,
 			},
 		}
-	case "trojan", "anytls":
+	case "trojan":
 		transport := &option.V2RayTransportOptions{
 			Type: server.Network,
 		}
@@ -195,6 +195,45 @@ func GetSingBoxConfig(uuid string, server *v2b.ServerInfo) (option.Options, erro
 				Insecure:   server.Allow_Insecure == 1,
 			}
 		}
+	case "anytls":
+		transport := &option.V2RayTransportOptions{
+			Type: server.Network,
+		}
+		switch transport.Type {
+		case "tcp", "":
+			transport.Type = ""
+		case "http":
+		case "ws":
+			var u *url.URL
+			u, err := url.Parse(server.NetworkSettings.Path)
+			if err != nil {
+				return option.Options{}, err
+			}
+			ed, _ := strconv.Atoi(u.Query().Get("ed"))
+			transport.WebsocketOptions.EarlyDataHeaderName = "Sec-WebSocket-Protocol"
+			transport.WebsocketOptions.MaxEarlyData = uint32(ed)
+			transport.WebsocketOptions.Path = u.Path
+		case "grpc":
+			transport.GRPCOptions.ServiceName = server.ServerName
+		}
+		out = option.Outbound{
+			Type: "trojan", // anytls 在 sing-box 中依然作为 trojan 类型处理
+			Tag:  "anytls", // 使用一个独立的标签以便调试
+			TrojanOptions: option.TrojanOutboundOptions{
+				ServerOptions: so,
+				Password:      uuid,
+				Transport:     transport,
+			},
+		}
+
+		// 关键修改：
+		// 移除 "if server.Tls != 0" 判断
+		// 强制为 anytls 启用 TLS
+		out.TrojanOptions.TLS = &option.OutboundTLSOptions{
+			Enabled:    true,
+			ServerName: server.ServerName,
+			Insecure:   server.Allow_Insecure == 1,
+		}	
 	case "hysteria":
 		if server.HysteriaVersion == 2 {
 			var obfs *option.Hysteria2Obfs
